@@ -14,6 +14,10 @@ quick description of what's in each folder
 - jupyter notebook of code for making cohorts
 - step by step readme (should be in here by 7/17/18)
 
+**data**
+
+- .csv files etc to run examples
+
 **JB Group Maker (should be in here by 7/17/18)**
 
 - r shiny app to create groups
