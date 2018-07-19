@@ -18,7 +18,7 @@ quick description of what's in each folder
 
 - .csv files etc to run examples
 
-**JB Group Maker (should be in here by 7/17/18)**
+**Joe Blatt**
 
 - r shiny app to create groups
 - step by step readme
