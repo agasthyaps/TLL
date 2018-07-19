@@ -1,0 +1,483 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+```{r}
+# install.packages("googlesheets")
+```
+```{r loadlibs}
+library("googlesheets")
+# load libraries
+library(topicmodels) #topic modeling functions
+library(stringr) #common string functions
+library(tidytext) #tidy text analysis
+suppressMessages(library(tidyverse)) #data manipulation and visualization
+#messages give R markdown compile error so we need to suppress it
+
+## Source topicmodels2LDAvis & optimal_k functions
+invisible(lapply(file.path("https://raw.githubusercontent.com/trinker/topicmodels_learning/master/functions",
+c("topicmodels2LDAvis.R", "optimal_k.R")),
+devtools::source_url))
+# suppressPackageStartupMessages(library("dplyr"))
+```
+Ok cool now let's try this
+
+```{r tutorial}
+poop <- gs_url("https://docs.google.com/spreadsheets/d/1yNJViT6GaHj12sPn6L9Oo9-vzJUawZQM-mNBv9ViCRk/edit?usp=sharing")
+p <- gs_read(poop)
+table <- as.data.frame(p)
+table
+```
+
+
+ok cool
+```{r}
+table
+
+skill.names <- vector()
+for(i in seq(ncol(table)-7)){
+  skill.names <- c(skill.names,paste("skill",as.character(i),sep="."))
+}
+
+names(table) <- c("time","name","interest","group.names","graded","lda","program",skill.names)
+table
+```
+
+```{r tutorial3}
+
+answers <- table[c(1,6)]
+names(answers) <- c("document","text")
+# to ensure that even if someone's entire answer is made up of stop words ("I want to be the best ever"), their answer will stay in.
+# answers$text <- sapply(answers$text,function(x) paste(x,"azkaban",sep=" "))
+answers$text
+answer_words <- answers %>% unnest_tokens(word,text)
+answer_words
+# answer_bigrams <- answers %>% unnest_tokens(ngram,text,token="ngrams",n=2)
+# answer_bigrams
+```
+ok
+```{r}
+word_count <- answer_words %>%
+  anti_join(stop_words) %>%
+  count(document,word,sort = T) %>%
+  ungroup()
+
+word_count
+# bigram_count <- answer_bigrams %>% 
+#   count(document,ngram,sort=T) %>% 
+#   ungroup()
+doc_lengths <- word_count %>% group_by(document) %>% 
+  summarize(freq = sum(n))
+
+# for(i in seq_along(doc_lengths)){
+#   if(doc_lengths$freq[i])
+# }
+doc_lengths
+
+left.out <- setdiff(answers$document,doc_lengths$document)
+inds <- match(left.out,answers$document)
+length(left.out)
+answers$text[inds] <- sapply(answers$text[inds],function(x) paste(x,"azkaban",sep=" "))
+answers$text
+# then redo unnest tokens etc (so that means it should prob just be a function)
+```
+```{r}
+
+size <- 5
+
+until_its_good <- function(df,size){
+  skills.table <- df[8:ncol(df)]
+  samp <- skills.table[sample(nrow(df),size),]
+  sums <- colSums(samp)
+  if(sum(samp >= size)>0){
+    until_its_good(df,size)
+  }
+  else{
+    df[rownames(samp),]
+  }
+}
+
+until_its_good(table,size)
+
+
+```
+s
+
+```{r}
+answer_dtm <- word_count %>%
+  cast_dtm(document,word,n)
+answer_dtm
+
+# tfidf_matrix <- bigram_count %>% 
+#   bind_tf_idf(ngram,document,n) %>% 
+#   arrange(desc(tf_idf))
+
+# tfidf_matrix
+
+stop_words
+```
+
+```{r optimalK}
+control <- list(burnin = 500, iter = 1000, keep = 100, seed = 46)
+
+#part B
+opt.k = optimal_k(answer_dtm, max.k=10, control=control,drop.seed = FALSE)
+opt.k
+answer_dtm
+```
+```{r LDA}
+answer_lda <-  LDA(answer_dtm, k = as.numeric(opt.k), 
+                   method="Gibbs", control=control)
+
+lda_inf = posterior(answer_lda)
+topics.hp = topics(answer_lda,1)
+terms.hp = terms(answer_lda, 10)
+print(terms.hp[])
+```
+
+```{r}
+top <- as.data.frame(topics.hp)
+rownames(table) <- table$Timestamp
+q <- merge(table,top,by=0)
+rownames(q) <- 1:nrow(q)
+q <- q[-c(1,2,5,7)]
+q
+# posterior(answer_lda,answer_dtm)
+colnames(table)
+```
+
+#### Ok, so here's the plan (?):
+
+**pre-processing**:
+- classify each answer into a topic
+- convert the rest to categorical
+- cluster everyone (how many clusters?)
+  - add each person's cluster as a column
+
+**THEN**: 
+- group people who have identified a group already
+- remove them
+
+**THEN, WITH THE PEOPLE LEFT**:
+- cosine similarity based on all factors
+  - interest
+  - grade
+  - lda
+  - program
+  - eventually: skill(?)
+
+**THINK ABOUT**: 
+
+- how do we make sure that groups have mixed skillsets
+- how do we incorporate feedback
+  - what kind of feedback is helpful
+  - what kind of feedback will students be willing to give
+  
+
+#### for now, we're going to ignore the "preselected partners"
+
+```{r}
+# table$lda <- topics.hp
+poop <- q$`are you taking this for a grade?` %>%
+  as.factor() %>%
+  as.numeric()
+q$grade <- poop
+
+q$interest <- q$`What are you most interested in?` %>%
+  as.factor() %>%
+  as.numeric()
+
+q$program <- q$`What Master's Program are you in?` %>%
+  as.factor() %>%
+  as.numeric()
+
+keeps <- c("Full Name","topics.hp","grade","interest",)
+test <- q[keeps]
+test
+```
+
+
+```{r}
+# install.packages("scclust")
+library(scclust)
+my_dist <- distances(test,
+                     dist_variables = c("lda", "grade", "interest"))
+my_clust <- sc_clustering(my_dist,3)
+get_clustering_stats(my_dist,my_clust)
+test$clust <- my_clust
+rownames(test) <- test$`Full Name`
+# install.packages("factoextra")
+```
+```{r}
+# install.packages("factoextra")
+library(factoextra)
+test <- test[-c(1)]
+fviz_nbclust(test, kmeans, method = "wss")
+```
+```{r}
+km.res <- kmeans(test,4,nstart=25)
+km.res
+```
+```{r}
+fviz_cluster(km.res, data = test,
+             ellipse.type = "euclid", # Concentration ellipse
+             star.plot = TRUE, # Add segments from centroids to items
+             repel = TRUE, # Avoid label overplotting (slow)
+             ggtheme = theme_minimal()
+             )
+
+```
+
+```{r}
+table
+```
+```{r}
+label_encode <- function(column){
+  newCol <- column %>% as.factor() %>% as.numeric()
+  newCol
+}
+
+p <- label_encode(table$`Full Name`)
+p
+s <- split(table[c(2,8:11)],as.factor(table$interest))
+s
+```
+```{r}
+max.size <- 5
+min.size <- 3
+s <- split(table[c(2,8:11)],as.factor(table$interest))
+drop.list <- vector()
+for(i in seq_along(s)){
+  if(nrow(s[[i]])<min.size){
+    check <- s[[i]]
+    drop.list <- c(drop.list,i)
+    
+    for(row in seq(nrow(check))){
+      found <- FALSE
+      for(j in seq_along(s)){
+        if(j == i){
+          next()
+        }
+        if(check[row,]$lda %in% s[[j]]$lda){
+          s[[j]] <- rbind(s[[j]],check[row,])
+          found = TRUE
+          break
+        }
+        if(found == TRUE){
+          next
+        }
+      }
+    }
+    # for(j in seq_along(s)){
+    #   if(j==i){
+    #     next
+    #   }
+    #   for(row in seq(nrow(check))){
+    #     print(row)
+    #     if(check[row,]$lda %in% s[[j]]$lda){
+    #       s[[j]] <- rbind(s[[j]],check[row,])
+    #       
+    #     }
+    #   }
+    # }
+  }
+}
+s <- s[-drop.list]
+s
+```
+
+```{r}
+
+sweet.spot <- floor(mean(c(max.size,min.size)))
+group.count <- 0
+
+for(group in seq_along(s)){
+  assignments <- vector()
+  
+  # define group sizes
+  rows <- nrow(s[[group]])
+  
+  # if the number of people in an interest group is equal to the min
+  # then they are all in a group together.
+  if(rows == min.size){
+    group.count <- group.count+1
+    assignments <- c(assignments,rep(group.count,rows))
+    s[[group]]$assignment <- sample(assignments)
+    next
+  }
+  
+  rem <- rows %% sweet.spot
+  ifelse(rem == 0, stop.at <- 0, stop.at <- rem+sweet.spot)
+  
+  while(rows > stop.at){
+    group.count <- group.count+1
+    assignments <- c(assignments,rep(group.count,sweet.spot))
+    rows <- rows-sweet.spot
+  }
+  
+  if(rows == max.size){
+    group.count <- group.count+1
+    assignments <- c(assignments,rep(group.count,rows))
+    s[[group]]$assignment <- sample(assignments)
+    next
+  }
+  
+  else if(sweet.spot-rem == 1){
+    group.count <- group.count+1
+    assignments <- c(assignments,rep(group.count,sweet.spot))
+    
+    group.count <- group.count+1
+    assignments <- c(assignments,rep(group.count,rem))
+    s[[group]]$assignment <- sample(assignments)
+    next
+  }
+  else{
+    while(rows > 0){
+      group.count <- group.count+1
+      assignments <- c(assignments,rep(group.count,min.size))
+      rows <- rows-min.size
+    }
+    s[[group]]$assignment <- sample(assignments)
+  }
+}
+# assignments
+s
+```
+
+```{r}
+final <- s
+for(i in seq_along(final)){
+  r <- c(final[[i]] %>% rownames() %>% as.numeric())
+  final[[i]]$lda <- table[r,]$`What do you want to get out of this class?`
+  final[[i]]$interest <- table[r,]$`What are you most interested in?`
+}
+final <- rbind_list(final)
+final <- final[-c(3,4)]
+final
+```
+
+
+```{r}
+string_to_tokens <- function(answers){
+  # string to tokens
+  answer_words <- answers %>% unnest_tokens(word,text)
+  
+  # tokens to word count
+  
+  word_count <- answer_words %>%
+    anti_join(stop_words) %>%
+    count(document,word,sort = T) %>%
+    ungroup()
+  word_count
+}
+do_lda <- function(df,columns=c(1,6)){
+  # column nums should be in this format: c(document, text)
+  
+  answers <- df[columns]
+  names(answers) <- c("document","text")
+  
+  word_count <- string_to_tokens(answers)
+  
+  # now see if we lost any answers due to the anti_join
+  # for example, an answer of "I want to be the very best" 
+  # would disappear. we can't allow that
+  
+  doc_lengths <- word_count %>% group_by(document) %>% 
+    summarize(freq = sum(n))
+  
+  left.out <- setdiff(answers$document,doc_lengths$document)
+  if(length(left.out > 0)){
+    inds <- match(left.out,answers$document)
+    answers$text[inds] <- sapply(answers$text[inds],function(x) paste(x,"azkaban",sep=" "))
+    word_count <- string_to_tokens(answers)
+  }
+  
+  # now change to dtm
+  answer_dtm <- word_count %>%
+    cast_dtm(document,word,n)
+  
+  # actual lda
+  control <- list(burnin = 500, iter = 1000, keep = 100, seed = 46)
+  answer_lda <-  LDA(answer_dtm, k = 9, 
+                     method="Gibbs", control=control)
+  
+  topic.list <- as.data.frame(topics(answer_lda,1))
+  topic.list
+}
+
+
+
+topic.list <- do_lda(table)
+names(topic.list) <- "topics"
+topic.list
+
+
+```
+```{r}
+label_encode <- function(column){
+      newCol <- column %>% as.factor() %>% as.numeric()
+      newCol[is.na(newCol)] <- 0
+      newCol
+}
+
+u <- colnames(table[,8:ncol(table)])
+for(skill in u){
+  table[,skill] <- label_encode(table[,skill])
+}
+table
+
+
+
+    
+    
+
+    
+        # drop unnecessary columns
+    cl <- cl[-c(1,2,5,7)]
+```
+```{r}
+
+assign_groups <- function(df,assignment.list){
+  avail_inds <- rownames(df)
+  unique.assign <- unique(assignment.list)
+  
+  for(a in seq_along(unique.assign)){
+    size <- sum(assignment.list == unique.assign[a])
+    if(a == length(unique.assign)){
+      temp <- df[avail_inds,]
+    }
+    else{
+      temp <- until_its_good(df[avail_inds,],size)  
+    }
+    used_inds <- rownames(temp)
+    rm(temp)
+    avail_inds <- setdiff(avail_inds,used_inds)
+    df[row.names(df) %in% used_inds,]$assignment <- unique.assign[a]
+  }
+}
+install.packages("rpivotTable")
+```
+
+```{r}
+plot.data <- read.csv("forplotting.csv")
+for.bar <- plot.data %>% select(assignment,c(6:(ncol(plot.data)-2))) %>% 
+  group_by(assignment) %>% 
+  summarise_all(funs(sum))
+for.bar
+```
+```{r}
+library(reshape2)
+df <- melt(for.bar,"assignment")
+ggplot(df,
+       aes(assignment,value)) +
+  geom_col(aes(fill=variable),position=position_dodge())
+df
+```
+```{r}
+testdf <- read.csv("GroupRecTest (Responses) - Form Responses 1.csv")
+testdf[,1:ncol(testdf)] <- lapply(testdf[,1:ncol(testdf)],function(x) as.character(x))
+testdf
+
+```
+

@@ -1,0 +1,389 @@
+plot(cars)
+install.packages("googlesheets")
+library("dplyr")
+suppressPackageStartupMessages(library("dplyr"))
+gs_copy(gs_gap(),to="Gapminder")
+suppressPackageStartupMessages(library("dplyr"))
+gs_copy(gs_gap(),to="Gapminder")
+library("googlesheets")
+gs_copy(gs_gap(),to="Gapminder")
+gap <- gs_title("Gapminder")
+gap
+africa <- gs_read(gap)
+poop
+poop <- gs_url("https://docs.google.com/spreadsheets/d/1Pif6qIGTwouRitbrIoVwHoe1NF9DNWCkZ4xL8tL9xT8/edit?usp=sharing")
+p <- gs_read(poop)
+p
+p$`(V) How to design learning experiences or curriculum`
+p[c(2)]
+p[c(2)][1]
+p[c(2)][c(1)]
+p[c(2)]$c(1)
+p[c(2)]
+p[2,1]
+p[2,2]
+source('~/.active-rstudio-document', echo=TRUE)
+library(shiny)
+ui <- fluidPage("poop")
+server <- function(input,output){}
+shinyApp(ui=ui,server=server)
+?textInput
+?sliderInput
+??sliderInput
+library(shiny)
+?textInput
+library("googlesheets")
+# suppressPackageStartupMessages(library("dplyr"))
+poop <- gs_url("https://docs.google.com/spreadsheets/d/1yNJViT6GaHj12sPn6L9Oo9-vzJUawZQM-mNBv9ViCRk/edit?usp=sharing")
+p <- gs_read(poop)
+table <- as.data.frame(p)
+head(table)
+table
+knitr::opts_chunk$set(echo = TRUE)
+# load libraries
+library(topicmodels) #topic modeling functions
+trump_tibble <- read.csv('trump_tibble.csv',encoding="UTF-8")
+# cast factors to characters
+trump_tibble$document <- as.character(trump_tibble$document)
+trump_tibble$text <- as.character(trump_tibble$text)
+install.packages("topicmodels")
+install.packages("stringr")
+install.packages("tidytext")
+install.packages("tidyverse")
+install.packages("stringr")
+knitr::opts_chunk$set(echo = TRUE)
+# load libraries
+library(topicmodels) #topic modeling functions
+library(stringr) #common string functions
+library(tidytext) #tidy text analysis
+suppressMessages(library(tidyverse)) #data manipulation and visualization
+#messages give R markdown compile error so we need to suppress it
+## Source topicmodels2LDAvis & optimal_k functions
+invisible(lapply(file.path("https://raw.githubusercontent.com/trinker/topicmodels_learning/master/functions",
+c("topicmodels2LDAvis.R", "optimal_k.R")),
+devtools::source_url))
+install.packages("devtools")
+trump_tibble <- read.csv('trump_tibble.csv',encoding="UTF-8")
+# cast factors to characters
+trump_tibble$document <- as.character(trump_tibble$document)
+trump_tibble$text <- as.character(trump_tibble$text)
+# load libraries
+library(topicmodels) #topic modeling functions
+library(stringr) #common string functions
+library(tidytext) #tidy text analysis
+suppressMessages(library(tidyverse)) #data manipulation and visualization
+#messages give R markdown compile error so we need to suppress it
+## Source topicmodels2LDAvis & optimal_k functions
+invisible(lapply(file.path("https://raw.githubusercontent.com/trinker/topicmodels_learning/master/functions",
+c("topicmodels2LDAvis.R", "optimal_k.R")),
+devtools::source_url))
+trump_tibble
+trump_words <- trump_tibble %>% unnest_tokens(word,text)
+trump_words
+ans <- table(c(1,6))
+ans
+ans <- table(c(:1,6))
+ans <- table[c(1,6)]
+ans
+answers <- table[c(1,6)]
+answers <- table[c(1,6)]
+answer_words <- answers %>% unnest_tokens(words,text)
+answers <- table[c(1,6)]
+answers
+# answer_words <- answers %>% unnest_tokens(words,text)
+# answer_words
+answers <- table[c(1,6)]
+answers
+answer_words <- answers %>% unnest_tokens(word,text)
+names(answers)
+answers <- table[c(1,6)]
+names(answers) <- c("document","text")
+answers
+answers <- table[c(1,6)]
+names(answers) <- c("document","text")
+answer_words <- answers %<% unnest_tokens(word,text)
+library(dplyr)
+answers <- table[c(1,6)]
+names(answers) <- c("document","text")
+answer_words <- answers %<% unnest_tokens(word,text)
+answers <- table[c(1,6)]
+names(answers) <- c("document","text")
+answer_words <- answers %>% unnest_tokens(word,text)
+answer_words
+table
+word_count <- answer_words %>%
+anti_join(stop_words) %>%
+count(document,word,sort = T) %>%
+ungroup()
+word_count
+answer_dtm <- word_count %>%
+cast_dtm(document,word,n)
+control <- list(burnin = 500, iter = 1000, keep = 100, seed = 46)
+#part B
+opt.k = optimal_k(answer_dtm, max.k=30, control=control,drop.seed = FALSE)
+opt.k
+answer_lda <-  LDA(answer_dtm, k = as.numeric(opt.k),
+method="Gibbs", control=control)
+answer_lda <-  LDA(answer_dtm, k = as.numeric(opt.k),
+method="Gibbs", control=control)
+lda_inf = posterior(answer_lda)
+topics.hp = topics(answer_lda,1)
+terms.hp = terms(answer_lda, 10)
+print(terms.hp[])
+answer_lda <-  LDA(answer_dtm, k = as.numeric(10),
+method="Gibbs", control=control)
+lda_inf = posterior(answer_lda)
+topics.hp = topics(answer_lda,1)
+terms.hp = terms(answer_lda, 10)
+print(terms.hp[])
+answer_topics <- tidy(answer_lda, matrix = "beta")
+top_n(answer_topics, 10)
+top_terms <- answer_topics %>%
+group_by(topic) %>%
+top_n(10, beta) %>%
+ungroup() %>%
+arrange(topic, -beta)
+top_terms %>%
+mutate(term = reorder(term, beta)) %>%
+ggplot(aes(term, beta, fill = factor(topic))) +
+geom_col(show.legend = FALSE) +
+facet_wrap(~ topic, scales = "free") +
+coord_flip()
+answer_lda <-  LDA(answer_dtm, k = as.numeric(10),
+method="Gibbs", control=control)
+lda_inf = posterior(answer_lda)
+topics.hp = topics(answer_lda,1)
+terms.hp = terms(answer_lda, 10)
+print(topics.hp[])
+answer_lda <-  LDA(answer_dtm, k = as.numeric(10),
+method="Gibbs", control=control)
+lda_inf = posterior(answer_lda)
+topics.hp = topics(answer_lda,1)
+terms.hp = terms(answer_lda, 10)
+print(terms.hp[])
+answer_lda <-  LDA(answer_dtm, k = as.numeric(opt.k),
+method="Gibbs", control=control)
+lda_inf = posterior(answer_lda)
+topics.hp = topics(answer_lda,1)
+terms.hp = terms(answer_lda, 10)
+print(terms.hp[])
+answer_topics <- tidy(answer_lda, matrix = "beta")
+top_n(answer_topics, 10)
+top_terms <- answer_topics %>%
+group_by(topic) %>%
+top_n(10, beta) %>%
+ungroup() %>%
+arrange(topic, -beta)
+top_terms %>%
+mutate(term = reorder(term, beta)) %>%
+ggplot(aes(term, beta, fill = factor(topic))) +
+geom_col(show.legend = FALSE) +
+facet_wrap(~ topic, scales = "free") +
+coord_flip()
+control <- list(burnin = 500, iter = 1000, keep = 100, seed = 46)
+#part B
+opt.k = optimal_k(answer_dtm, max.k=10, control=control,drop.seed = FALSE)
+opt.k
+answer_lda <-  LDA(answer_dtm, k = as.numeric(opt.k),
+method="Gibbs", control=control)
+lda_inf = posterior(answer_lda)
+topics.hp = topics(answer_lda,1)
+terms.hp = terms(answer_lda, 10)
+print(terms.hp[])
+answer_topics <- tidy(answer_lda, matrix = "beta")
+top_n(answer_topics, 10)
+top_terms <- answer_topics %>%
+group_by(topic) %>%
+top_n(10, beta) %>%
+ungroup() %>%
+arrange(topic, -beta)
+top_terms %>%
+mutate(term = reorder(term, beta)) %>%
+ggplot(aes(term, beta, fill = factor(topic))) +
+geom_col(show.legend = FALSE) +
+facet_wrap(~ topic, scales = "free") +
+coord_flip()
+top_terms
+table
+?optimal_k
+??optimal_k
+control <- list(burnin = 500, iter = 1000, keep = 100, seed = 46)
+#part B
+opt.k = optimal_k(answer_dtm, max.k=10, control=control,drop.seed = FALSE)
+opt.k
+lda_inf
+apply(lda_inf, max())
+apply(X = lda_inf,FUN=max())
+lda_inf %>% max()
+apply(lda_inf,1,which.max)
+topics.hp
+length(topics.hp)
+topics.hp[c(1)]
+topics.hp[1]
+topics.hp[1:]
+topics.hp[1:,]
+topics.hp[,1:]
+topics.hp[]
+topics.hp[,1]
+topics.hp[1,]
+describe(topics.hp)
+summary(topics.hp)
+table$lda <- topics.hp
+table$lda <- topics.hp
+table
+table$lda <- topics.hp
+poop <- table$`are you taking this for a grade?` %>%
+as.factor() %>%
+as.numeric()
+poop
+table$lda <- topics.hp
+poop <- table$`are you taking this for a grade?` %>%
+as.factor() %>%
+as.numeric()
+table$yn <- poop
+table$lda <- topics.hp
+poop <- table$`are you taking this for a grade?` %>%
+as.factor() %>%
+as.numeric()
+table$grade <- poop
+table$interest <- table$`What are you most interested in?` %>%
+as.factor() %>%
+as.numeric()
+table$program <- table$`What Master's Program are you in?` %>%
+as.factor() %>%
+as.numeric() %>%
+table$lda <- topics.hp
+poop <- table$`are you taking this for a grade?` %>%
+as.factor() %>%
+as.numeric()
+table$grade <- poop
+table$interest <- table$`What are you most interested in?` %>%
+as.factor() %>%
+as.numeric()
+table$program <- table$`What Master's Program are you in?` %>%
+as.factor() %>%
+as.numeric()
+table
+keeps <- c("Full Name","lda","grade","interest","program")
+test <- table[keeps]
+test
+keeps <- c("Full Name","lda","grade","interest")
+test <- table[keeps]
+test
+shiny::runApp('Documents/Agasthya/JoeBlatt/App')
+table
+test
+install.packages('scclust')
+library(scclust)
+my_data <- data.frame(id = 1:100000,
+type = factor(rbinom(100000, 3, 0.3),
+labels = c("A", "B", "C", "D")),
+x1 = rnorm(100000),
+x2 = rnorm(100000),
+x3 = rnorm(100000))
+my_data
+my_dist <- distances(my_data,
+dist_variables = c("x1", "x2", "x3"))
+my_dist
+my_dist <- distances(test,
+dist_variables = c("lda", "grade", "interest"))
+my_dist
+my_clust <- sc_clustering(my_dist,3)
+my_clust
+get_clustering_stats(my_dist,my_clust)
+test$clust <- my_clust
+test
+rownames(test) <- test$`Full Name`
+test
+test[2:,]
+test[[2:,]]
+test[[2:]]
+test[2]
+test[2:]
+test[,2:]
+test[c(2)]
+test[c(2:)]
+test[,2]
+test[,2:-1]
+test[,2:4]
+test[,2:5]
+test[-c(1)]
+test <- test[-c(1)]
+test
+install.packages("factoextra")
+library(factoextra)
+fviz_nbclust(test, kmeans, method = "wss") +
+geom_vline(xintercept = 4, linetype = 2)
+library(factoextra)
+fviz_nbclust(test, kmeans, method = "wss")
+km.res <- kmeans(test,3,nstart=25)
+km.res
+fviz_cluster(km.res, data = test,
+palette = c("#2E9FDF", "#00AFBB", "#E7B800"),
+ellipse.type = "euclid", # Concentration ellipse
+star.plot = TRUE, # Add segments from centroids to items
+repel = TRUE, # Avoid label overplotting (slow)
+ggtheme = theme_minimal()
+)
+test
+km.res <- kmeans(test[-c(4)],3,nstart=25)
+km.res
+fviz_cluster(km.res, data = test,
+palette = c("#2E9FDF", "#00AFBB", "#E7B800"),
+ellipse.type = "euclid", # Concentration ellipse
+star.plot = TRUE, # Add segments from centroids to items
+repel = TRUE, # Avoid label overplotting (slow)
+ggtheme = theme_minimal()
+)
+test
+test[-c(4)]
+km.res <- kmeans(test[-c(4)],4,nstart=25)
+km.res
+fviz_cluster(km.res, data = test,
+ellipse.type = "euclid", # Concentration ellipse
+star.plot = TRUE, # Add segments from centroids to items
+repel = TRUE, # Avoid label overplotting (slow)
+ggtheme = theme_minimal()
+)
+km.res <- kmeans(test[-c(4)],6,nstart=25)
+km.res
+fviz_cluster(km.res, data = test,
+ellipse.type = "euclid", # Concentration ellipse
+star.plot = TRUE, # Add segments from centroids to items
+repel = TRUE, # Avoid label overplotting (slow)
+ggtheme = theme_minimal()
+)
+km.res <- kmeans(test[-c(4)],3,nstart=25)
+km.res
+optimal_k(test,max.k=6)
+optimal_k(test, max.k=10, control=control,drop.seed = FALSE)
+optimal_k(test, max.k=6, control=control,drop.seed = FALSE)
+optimal_k(test, max.k=30, control=control,drop.seed = FALSE)
+optimal_k(test, max.k=30, control=control,drop.seed = FALSE)
+km.res <- kmeans(test,10,nstart=25)
+km.res
+fviz_cluster(km.res, data = test,
+ellipse.type = "euclid", # Concentration ellipse
+star.plot = TRUE, # Add segments from centroids to items
+repel = TRUE, # Avoid label overplotting (slow)
+ggtheme = theme_minimal()
+)
+km.res <- kmeans(test,3,nstart=25)
+km.res
+fviz_cluster(km.res, data = test,
+ellipse.type = "euclid", # Concentration ellipse
+star.plot = TRUE, # Add segments from centroids to items
+repel = TRUE, # Avoid label overplotting (slow)
+ggtheme = theme_minimal()
+)
+km.res <- kmeans(test,4,nstart=25)
+km.res
+fviz_cluster(km.res, data = test,
+ellipse.type = "euclid", # Concentration ellipse
+star.plot = TRUE, # Add segments from centroids to items
+repel = TRUE, # Avoid label overplotting (slow)
+ggtheme = theme_minimal()
+)
+test
+table
+table[c(4,7),]

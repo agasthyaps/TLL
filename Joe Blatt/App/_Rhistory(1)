@@ -1,0 +1,512 @@
+else{
+df[rownames(samp),]
+}
+}
+until_its_good(table,size)
+size <- 4
+until_its_good <- function(df,size){
+skills.table <- df[8:ncol(df)]
+samp <- skills.table[sample(nrow(df),size),]
+sums <- colSums(samp)
+print(sum(samp >= size))
+if(sum(samp >= size)>0){
+until_its_good(df,size)
+}
+else{
+df[rownames(samp),]
+}
+}
+until_its_good(table,size)
+size <- 5
+until_its_good <- function(df,size){
+skills.table <- df[8:ncol(df)]
+samp <- skills.table[sample(nrow(df),size),]
+sums <- colSums(samp)
+if(sum(samp >= size)>0){
+until_its_good(df,size)
+}
+else{
+df[rownames(samp),]
+}
+}
+until_its_good(table,size)
+shiny::runApp('Documents/Agasthya/Joe Blatt/App')
+length(left.out)
+# posterior(answer_lda,answer_dtm)
+top
+# posterior(answer_lda,answer_dtm)
+top[order(top)]
+# posterior(answer_lda,answer_dtm)
+top[order(top[1])]
+# posterior(answer_lda,answer_dtm)
+top[order(top[1,])]
+# posterior(answer_lda,answer_dtm)
+top[order(top[,1])]
+# posterior(answer_lda,answer_dtm)
+names(table$time)
+# posterior(answer_lda,answer_dtm)
+name(table$time)
+# posterior(answer_lda,answer_dtm)
+colnames(table$time)
+# posterior(answer_lda,answer_dtm)
+colnames(table)
+shiny::runApp()
+source('~/.active-rstudio-document', echo=TRUE)
+string_to_tokens <- function(answers){
+# string to tokens
+answer_words <- answers %>% unnest_tokens(word,text)
+# tokens to word count
+word_count <- answer_words %>%
+anti_join(stop_words) %>%
+count(document,word,sort = T) %>%
+ungroup()
+word_count
+}
+do_lda <- function(df,columns=c(1,6)){
+# column nums should be in this format: c(document, text)
+answers <- df[columns]
+names(answers) <- c("document","text")
+word_count <- string_to_tokens(answers)
+# now see if we lost any answers due to the anti_join
+# for example, an answer of "I want to be the very best"
+# would disappear. we can't allow that
+doc_lengths <- word_count %>% group_by(document) %>%
+summarize(freq = sum(n))
+left.out <- setdiff(answers$document,doc_lengths$document)
+if(length(left.out > 0)){
+inds <- match(left.out,answers$document)
+answers$text[inds] <- sapply(answers$text[inds],function(x) paste(x,"azkaban",sep=" "))
+word_count <- string_to_tokens(answers)
+}
+# now change to dtm
+answer_dtm <- word_count %>%
+cast_dtm(document,word,n)
+# actual lda
+control <- list(burnin = 500, iter = 1000, keep = 100, seed = 46)
+answer_lda <-  LDA(answer_dtm, k = 9,
+method="Gibbs", control=control)
+topic.list <- as.data.frame(topics(answer_lda,1))
+topic.list
+}
+topic.list <- do_lda(table)
+library("googlesheets")
+# load libraries
+library(topicmodels) #topic modeling functions
+library(stringr) #common string functions
+library(tidytext) #tidy text analysis
+suppressMessages(library(tidyverse)) #data manipulation and visualization
+#messages give R markdown compile error so we need to suppress it
+## Source topicmodels2LDAvis & optimal_k functions
+invisible(lapply(file.path("https://raw.githubusercontent.com/trinker/topicmodels_learning/master/functions",
+c("topicmodels2LDAvis.R", "optimal_k.R")),
+devtools::source_url))
+# suppressPackageStartupMessages(library("dplyr"))
+string_to_tokens <- function(answers){
+# string to tokens
+answer_words <- answers %>% unnest_tokens(word,text)
+# tokens to word count
+word_count <- answer_words %>%
+anti_join(stop_words) %>%
+count(document,word,sort = T) %>%
+ungroup()
+word_count
+}
+do_lda <- function(df,columns=c(1,6)){
+# column nums should be in this format: c(document, text)
+answers <- df[columns]
+names(answers) <- c("document","text")
+word_count <- string_to_tokens(answers)
+# now see if we lost any answers due to the anti_join
+# for example, an answer of "I want to be the very best"
+# would disappear. we can't allow that
+doc_lengths <- word_count %>% group_by(document) %>%
+summarize(freq = sum(n))
+left.out <- setdiff(answers$document,doc_lengths$document)
+if(length(left.out > 0)){
+inds <- match(left.out,answers$document)
+answers$text[inds] <- sapply(answers$text[inds],function(x) paste(x,"azkaban",sep=" "))
+word_count <- string_to_tokens(answers)
+}
+# now change to dtm
+answer_dtm <- word_count %>%
+cast_dtm(document,word,n)
+# actual lda
+control <- list(burnin = 500, iter = 1000, keep = 100, seed = 46)
+answer_lda <-  LDA(answer_dtm, k = 9,
+method="Gibbs", control=control)
+topic.list <- as.data.frame(topics(answer_lda,1))
+topic.list
+}
+topic.list <- do_lda(table)
+topic.list
+string_to_tokens <- function(answers){
+# string to tokens
+answer_words <- answers %>% unnest_tokens(word,text)
+# tokens to word count
+word_count <- answer_words %>%
+anti_join(stop_words) %>%
+count(document,word,sort = T) %>%
+ungroup()
+word_count
+}
+do_lda <- function(df,columns=c(1,6)){
+# column nums should be in this format: c(document, text)
+answers <- df[columns]
+names(answers) <- c("document","text")
+word_count <- string_to_tokens(answers)
+# now see if we lost any answers due to the anti_join
+# for example, an answer of "I want to be the very best"
+# would disappear. we can't allow that
+doc_lengths <- word_count %>% group_by(document) %>%
+summarize(freq = sum(n))
+left.out <- setdiff(answers$document,doc_lengths$document)
+if(length(left.out > 0)){
+inds <- match(left.out,answers$document)
+answers$text[inds] <- sapply(answers$text[inds],function(x) paste(x,"azkaban",sep=" "))
+word_count <- string_to_tokens(answers)
+}
+# now change to dtm
+answer_dtm <- word_count %>%
+cast_dtm(document,word,n)
+# actual lda
+control <- list(burnin = 500, iter = 1000, keep = 100, seed = 46)
+answer_lda <-  LDA(answer_dtm, k = 9,
+method="Gibbs", control=control)
+topic.list <- as.data.frame(topics(answer_lda,1))
+topic.list
+}
+topic.list <- do_lda(table)
+names(topic.list) <- "topics"
+topic.list
+shiny::runApp()
+farts <- c(1,1,1,1,2,2,2)
+unique(farts)
+farts <- c(1,1,1,1,2,2,2)
+un_farts <- unique(farts)
+for(i in enumerate(un_farts)){
+print(i)
+}
+farts <- c(1,1,1,1,2,2,2)
+un_farts <- unique(farts)
+library(itertools)
+farts <- c(1,1,1,1,2,2,2)
+un_farts <- unique(farts)
+install.packages("itertools")
+library(itertools)
+for(i in enumerate(un_farts)){
+print(i)
+}
+farts <- c(1,1,1,1,2,2,2)
+un_farts <- unique(farts)
+# install.packages("itertools")
+# library(itertools)
+as.list(enumerate(rnorm(5)))
+farts <- c(1,1,1,1,2,2,2)
+un_farts <- unique(farts)
+# install.packages("itertools")
+# library(itertools)
+as.list(enumerate(un_farts))
+# install.packages("itertools")
+# library(itertools)
+enumerate(un_farts)
+farts <- c(1,1,1,1,2,2,2)
+un_farts <- unique(farts)
+# install.packages("itertools")
+# library(itertools)
+for(i in as.list(enumerate(un_farts))){
+print(i)
+}
+farts <- c(1,1,1,1,2,2,2)
+un_farts <- unique(farts)
+# install.packages("itertools")
+# library(itertools)
+for(i in as.list(enumerate(un_farts))){
+print(i$value)
+}
+farts <- c(1,1,1,1,2,2,2)
+un_farts <- unique(farts)
+# install.packages("itertools")
+# library(itertools)
+for(i in as.list(enumerate(un_farts))){
+print(i$index)
+}
+farts <- c(1,1,1,1,2,2,2)
+un_farts <- unique(farts)
+# install.packages("itertools")
+# library(itertools)
+for(i in as.list(enumerate(un_farts))){
+if(i$index == length(un_farts)){
+print("done")
+}
+else{
+print("more to go")
+}
+}
+shiny::runApp()
+table
+poop <- gs_url("https://docs.google.com/spreadsheets/d/1yNJViT6GaHj12sPn6L9Oo9-vzJUawZQM-mNBv9ViCRk/edit?usp=sharing")
+library("googlesheets")
+# load libraries
+library(topicmodels) #topic modeling functions
+library(stringr) #common string functions
+library(tidytext) #tidy text analysis
+suppressMessages(library(tidyverse)) #data manipulation and visualization
+#messages give R markdown compile error so we need to suppress it
+## Source topicmodels2LDAvis & optimal_k functions
+invisible(lapply(file.path("https://raw.githubusercontent.com/trinker/topicmodels_learning/master/functions",
+c("topicmodels2LDAvis.R", "optimal_k.R")),
+devtools::source_url))
+# suppressPackageStartupMessages(library("dplyr"))
+poop <- gs_url("https://docs.google.com/spreadsheets/d/1yNJViT6GaHj12sPn6L9Oo9-vzJUawZQM-mNBv9ViCRk/edit?usp=sharing")
+p <- gs_read(poop)
+table <- as.data.frame(p)
+label_encode <- function(column){
+newCol <- column %>% as.factor() %>% as.numeric()
+newCol
+}
+table
+table[26,]
+table[26,9:12]
+label_encode(table[26,9:12])
+table[26,9:12]
+table{[26,9:12]}
+table[[26,9:12]]
+[26,9:12]
+table[26,9:12]
+label_encode <- function(column){
+newCol <- column %>% as.factor() %>% as.numeric()
+newCol
+}
+u <- table[26,9:12]
+for(i in u){
+print(i)
+}
+b
+label_encode <- function(column){
+newCol <- column %>% as.factor() %>% as.numeric()
+newCol
+}
+u <- table[26,9:12]
+b <- vector()
+for(i in u){
+b <- c(b,i)
+}
+b
+label_encode <- function(column){
+newCol <- column %>% as.factor() %>% as.numeric()
+newCol
+}
+u <- table[26,9:12]
+b <- vector()
+for(i in u){
+b <- c(b,i)
+}
+label_encode(b)
+b[b==NA]
+is.NA(b)
+is.na(b)
+b[is.na(b)]
+label_encode <- function(column){
+newCol <- column %>% as.factor() %>% as.numeric()
+newCol
+}
+u <- table[26,9:12]
+b <- vector()
+for(i in u){
+b <- c(b,i)
+}
+label_encode(b)
+b[is.na(b)] <- 0
+b
+label_encode <- function(column){
+newCol <- column %>% as.factor() %>% as.numeric()
+newCol
+}
+u <- table[26,9:12]
+b <- vector()
+for(i in u){
+b <- c(b,i)
+}
+b <- label_encode(b)
+b[is.na(b)] <- 0
+b
+shiny::runApp()
+poop <- gs_url("https://docs.google.com/spreadsheets/d/1yNJViT6GaHj12sPn6L9Oo9-vzJUawZQM-mNBv9ViCRk/edit?usp=sharing")
+library("googlesheets")
+# load libraries
+library(topicmodels) #topic modeling functions
+library(stringr) #common string functions
+library(tidytext) #tidy text analysis
+suppressMessages(library(tidyverse)) #data manipulation and visualization
+#messages give R markdown compile error so we need to suppress it
+## Source topicmodels2LDAvis & optimal_k functions
+invisible(lapply(file.path("https://raw.githubusercontent.com/trinker/topicmodels_learning/master/functions",
+c("topicmodels2LDAvis.R", "optimal_k.R")),
+devtools::source_url))
+# suppressPackageStartupMessages(library("dplyr"))
+poop <- gs_url("https://docs.google.com/spreadsheets/d/1yNJViT6GaHj12sPn6L9Oo9-vzJUawZQM-mNBv9ViCRk/edit?usp=sharing")
+p <- gs_read(poop)
+table <- as.data.frame(p)
+table
+skill.names <- vector()
+for(i in seq(ncol(table)-7)){
+skill.names <- c(skill.names,paste("skill",as.character(i),sep="."))
+}
+names(table) <- c("time","name","interest","group.names","graded","lda","program",skill.names)
+table
+label_encode <- function(column){
+newCol <- column %>% as.factor() %>% as.numeric()
+newCol
+}
+u <- table[26,9:12]
+u
+label_encode <- function(column){
+newCol <- column %>% as.factor() %>% as.numeric()
+newCol
+}
+u <- table[,8:12]
+u
+label_encode <- function(column){
+newCol <- column %>% as.factor() %>% as.numeric()
+newCol
+}
+u <- colnames(table[,8:12])
+u
+label_encode <- function(column){
+newCol <- column %>% as.factor() %>% as.numeric()
+newCol
+}
+u <- colnames(table[,8:12])
+for(name in u){
+print(table[,name])
+}
+shiny::runApp()
+table[,u]
+label_encode <- function(column){
+newCol <- column %>% as.factor() %>% as.numeric()
+newCol
+}
+u <- colnames(table[,8:12])
+table[,u] %>% label_encode()
+library("googlesheets")
+# load libraries
+library(topicmodels) #topic modeling functions
+library(stringr) #common string functions
+library(tidytext) #tidy text analysis
+suppressMessages(library(tidyverse)) #data manipulation and visualization
+#messages give R markdown compile error so we need to suppress it
+## Source topicmodels2LDAvis & optimal_k functions
+invisible(lapply(file.path("https://raw.githubusercontent.com/trinker/topicmodels_learning/master/functions",
+c("topicmodels2LDAvis.R", "optimal_k.R")),
+devtools::source_url))
+# suppressPackageStartupMessages(library("dplyr"))
+label_encode <- function(column){
+newCol <- column %>% as.factor() %>% as.numeric()
+newCol
+}
+u <- colnames(table[,8:12])
+table[,u] %>% label_encode()
+label_encode <- function(column){
+newCol <- column %>% as.factor() %>% as.numeric()
+newCol
+}
+u <- colnames(table[,8:12])
+table[,u]
+label_encode <- function(column){
+newCol <- column %>% as.factor() %>% as.numeric()
+newCol
+}
+u <- colnames(table[,8:12])
+for(skill in u){
+print(skill)
+}
+label_encode <- function(column){
+newCol <- column %>% as.factor() %>% as.numeric()
+newCol
+}
+u <- colnames(table[,8:ncol(table)])
+for(skill in u){
+table[,skill] <- label_encode(table[,skill])
+}
+label_encode <- function(column){
+newCol <- column %>% as.factor() %>% as.numeric()
+newCol
+}
+u <- colnames(table[,8:ncol(table)])
+for(skill in u){
+table[,skill] <- label_encode(table[,skill])
+}
+table
+label_encode <- function(column){
+newCol <- column %>% as.factor() %>% as.numeric()
+newCol[is.na(newCol)] <- 0
+newCol
+}
+u <- colnames(table[,8:ncol(table)])
+for(skill in u){
+table[,skill] <- label_encode(table[,skill])
+}
+table
+shiny::runApp()
+library("googlesheets")
+# load libraries
+library(topicmodels) #topic modeling functions
+library(stringr) #common string functions
+library(tidytext) #tidy text analysis
+suppressMessages(library(tidyverse)) #data manipulation and visualization
+#messages give R markdown compile error so we need to suppress it
+## Source topicmodels2LDAvis & optimal_k functions
+invisible(lapply(file.path("https://raw.githubusercontent.com/trinker/topicmodels_learning/master/functions",
+c("topicmodels2LDAvis.R", "optimal_k.R")),
+devtools::source_url))
+# suppressPackageStartupMessages(library("dplyr"))
+poop <- gs_url("https://docs.google.com/spreadsheets/d/1yNJViT6GaHj12sPn6L9Oo9-vzJUawZQM-mNBv9ViCRk/edit?usp=sharing")
+p <- gs_read(poop)
+table <- as.data.frame(p)
+table
+skill.names <- vector()
+for(i in seq(ncol(table)-7)){
+skill.names <- c(skill.names,paste("skill",as.character(i),sep="."))
+}
+names(table) <- c("time","name","interest","group.names","graded","lda","program",skill.names)
+table
+shiny::runApp()
+runApp()
+runApp()
+runApp()
+runApp()
+runApp()
+runApp()
+runApp()
+runApp()
+runApp()
+runApp()
+runApp()
+runApp()
+runApp()
+runApp()
+runApp()
+runApp()
+runApp()
+runApp()
+runApp()
+runApp()
+runApp()
+runApp()
+runApp()
+runApp()
+runApp()
+runApp()
+runApp()
+runApp()
+runApp()
+runApp()
+runApp()
+runApp()
+runApp()
+runApp()
+shiny::runApp()
+install.packages("rpivotTable")
+shiny::runApp()
+shiny::runApp()
+shiny::runApp()
