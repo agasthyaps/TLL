@@ -8,11 +8,13 @@ quick description of what's in each folder
 - LPD-ready qualitative code
 - Word cloud generator
 - pickled LDA models trained on pilot data
+- code to create new qual groups ("Initial LDA")
+- step by step readme for creating new qual groups
 
 **Cohort Maker**
 
 - jupyter notebook of code for making cohorts
-- step by step readme (should be in here by 7/17/18)
+- step by step readme
 
 **data**
 
