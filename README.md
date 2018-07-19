@@ -1,6 +1,6 @@
 # TLL
 
-quick description of what's in each folder
+quick description of what's in each folder. links to important stuff.
 
 **LPD Stuff**
 
@@ -8,8 +8,8 @@ quick description of what's in each folder
 - LPD-ready qualitative code
 - Word cloud generator
 - pickled LDA models trained on pilot data
-- code to create new qual groups ("Initial LDA")
-- step by step readme for creating new qual groups
+- [code to create new qual groups ("Initial LDA")](LPD%20Stuff/Initial_LDA.ipynb)
+- [step by step readme for creating new qual groups](LPD%20Stuff/Initial%20LDA%20Instructions.pdf)
 
 **Cohort Maker**
 
@@ -22,6 +22,6 @@ quick description of what's in each folder
 
 **Joe Blatt**
 
-- r shiny app to create groups
-- step by step readme
+- [r shiny app to create groups](Joe%20Blatt/App/app.R)
+- [step by step readme](Joe%20Blatt/Joe%20Blatt%20Instructions.pdf)
 
