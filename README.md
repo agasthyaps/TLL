@@ -1,6 +1,6 @@
 # TLL
 
-quick description of what's in each folder. links to important stuff.
+quick description of what's in each folder. links to important stuff. download the step-by-step guides in order to access the embedded links.
 
 **LPD Stuff**
 
@@ -13,7 +13,7 @@ quick description of what's in each folder. links to important stuff.
 
 **Cohort Maker**
 
-- jupyter notebook of code for making cohorts
+- [jupyter notebook of code for making cohorts](Cohort%20Maker/FINAL%20COHORT%20MAKER.ipynb)
 - [step by step readme](Cohort%20Maker/HPL%20Cohort%20Creation%20Tool%20Instructions.pdf)
 
 **data**
