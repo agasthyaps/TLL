@@ -14,7 +14,7 @@ quick description of what's in each folder
 **Cohort Maker**
 
 - jupyter notebook of code for making cohorts
-- [step by step readme](TLL/Cohort Maker/HPL Cohort Creation Tool Instructions.pdf)
+- [step by step readme](www.google.com)
 
 **data**
 
